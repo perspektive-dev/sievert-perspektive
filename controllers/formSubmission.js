@@ -2,7 +2,7 @@ const auth = require("../configs/auth");
 const { google } = require("googleapis");
 const { formConfig } = require("../configs/formConfig");
 
-export const formSubmit = async function (req, res) {
+const formSubmit = async function (req, res) {
 	try {
         if (req.body.formType == "") {
             return res.status(400).send("Form type is required");
@@ -45,3 +45,5 @@ export const formSubmit = async function (req, res) {
         return res.status(500).send("Error inserting data");
 	}
 }
+
+module.exports = { formSubmit };
