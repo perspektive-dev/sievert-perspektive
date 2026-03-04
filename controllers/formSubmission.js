@@ -4,13 +4,13 @@ const { formConfig } = require("../configs/formConfig");
 
 const formSubmit = async function (req, res) {
 	try {
-        if (req.body.formType == "") {
-            return res.status(400).send("Form type is required");
-        }
+		if (req.body.formType == "") {
+			return res.status(400).send("Form type is required");
+		}
 
-        if (formConfig[req.body.formType] == undefined) {
-            return res.status(400).send("Invalid form type"); 
-        }
+		if (formConfig[req.body.formType] == undefined) {
+			return res.status(400).send("Invalid form type");
+		}
 
 		if (!req.body?.data) {
 			return res.status(400).send("Data is required");
@@ -19,17 +19,17 @@ const formSubmit = async function (req, res) {
 		const authClient = await auth.getClient();
 		google.options({ auth: authClient });
 
-        const configForm = formConfig[req.body.formType];
+		const configForm = formConfig[req.body.formType];
 		const data = [];
 
-        for (let index = 0; index < configForm.field.length; index++) {
-            const fieldName = configForm[index];
-            if (req.body?.data[fieldName] == undefined || req.body.data[fieldName] == null) {
-                req.body.data[fieldName] = "";
-            }
-            data.push([req.body[fieldName].trim()]);
-        }
-        
+		for (let index = 0; index < configForm.field.length; index++) {
+			const fieldName = configForm.field[index];
+			if (req.body?.data[fieldName] == undefined || req.body.data[fieldName] == null) {
+				req.body.data[fieldName] = "-";
+			}
+			data.push([req.body.data[fieldName].trim()]);
+		}
+
 		const sheets = google.sheets({
 			version: "v4",
 		});
@@ -39,15 +39,17 @@ const formSubmit = async function (req, res) {
 			range: configForm.sheetRange,
 			valueInputOption: "USER_ENTERED",
 			resource: {
-				values: [data],
+				values: data,
 			},
 		});
 
-        return res.status(200).send("Successfully inserted data");
+		return res.status(200).send("Successfully inserted data");
 	} catch (error) {
-		console.log(error);
-        return res.status(500).send("Error inserting data");
+		// console.log(error);
+		console.log(error.response.data.error);
+		console.log(Object.keys(error));
+		return res.status(500).send("Error inserting data");
 	}
-}
+};
 
 module.exports = { formSubmit };
