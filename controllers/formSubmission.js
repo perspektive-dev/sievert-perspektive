@@ -12,6 +12,10 @@ const formSubmit = async function (req, res) {
             return res.status(400).send("Invalid form type"); 
         }
 
+		if (!req.body?.data) {
+			return res.status(400).send("Data is required");
+		}
+
 		const authClient = await auth.getClient();
 		google.options({ auth: authClient });
 
@@ -20,8 +24,8 @@ const formSubmit = async function (req, res) {
 
         for (let index = 0; index < configForm.field.length; index++) {
             const fieldName = configForm[index];
-            if (req.body[fieldName] == undefined || req.body[fieldName] == null) {
-                req.body[fieldName] = "";
+            if (req.body?.data[fieldName] == undefined || req.body.data[fieldName] == null) {
+                req.body.data[fieldName] = "";
             }
             data.push([req.body[fieldName].trim()]);
         }
