@@ -5,15 +5,21 @@ const { formConfig } = require("../configs/formConfig");
 const formSubmit = async function (req, res) {
 	try {
 		if (req.body.formType == "") {
-			return res.status(400).send("Form type is required");
+			return res.status(400).json({
+				message : "Form type is required",
+			});
 		}
 
 		if (formConfig[req.body.formType] == undefined) {
-			return res.status(400).send("Invalid form type");
+			return res.status(400).json({
+				message : "Form type is not supported",
+			});
 		}
 
 		if (!req.body?.data) {
-			return res.status(400).send("Data is required");
+			return res.status(400).json({
+				message : "Data is required",
+			});
 		}
 
 		const authClient = await auth.getClient();
@@ -26,6 +32,11 @@ const formSubmit = async function (req, res) {
 			const fieldName = configForm.field[index];
 			if (req.body?.data[fieldName] == undefined || req.body.data[fieldName] == null) {
 				req.body.data[fieldName] = "-";
+			}
+			if (req.body.data[fieldName].length > 2000) {
+				return res.status(400).json({
+					message : "Data is too long",
+				});
 			}
 			data.push([req.body.data[fieldName].trim()]);
 		}
