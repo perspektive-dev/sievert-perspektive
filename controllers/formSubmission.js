@@ -1,6 +1,7 @@
 const auth = require("../configs/auth");
 const { google } = require("googleapis");
 const { formConfig } = require("../configs/formConfig");
+const { sendMailNotifReferral } = require("../configs/mailer")
 
 const formSubmit = async function (req, res) {
 	try {
@@ -53,6 +54,12 @@ const formSubmit = async function (req, res) {
 				values: data,
 			},
 		});
+
+		// send email
+		await sendMailNotifReferral({
+			fullLink : configForm.fullLinkSheet,
+			...req.body.data[fieldName]
+		})
 
 		return res.status(200).send("Successfully inserted data");
 	} catch (error) {
