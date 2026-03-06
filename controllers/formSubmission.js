@@ -58,7 +58,7 @@ const formSubmit = async function (req, res) {
 		// send email
 		await sendMailNotifReferral({
 			fullLink : configForm.fullLinkSheet,
-			...req.body.data[fieldName]
+			...req.body.data
 		})
 
 		return res.status(200).send("Successfully inserted data");
