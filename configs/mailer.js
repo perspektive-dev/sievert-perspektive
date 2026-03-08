@@ -2,7 +2,9 @@ const nodemailer = require('nodemailer');
 
 // Create a transporter object
 let transporter = nodemailer.createTransport({
-  service: 'gmail', // you can use other services like Outlook, Yahoo, etc.
+  host: process.env.MAIL_HOST,
+  port: process.env.MAIL_PORT,
+  secure: process.env.MAIL_SECURE === "true",
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASSWORD
@@ -27,7 +29,7 @@ const sendMailNotifReferral = async (data) => {
                 continue;
             }
             await transporter.sendMail({
-                from : process.env.MAIL_USER,
+                from : process.env.MAIL_FROM,
                 to : to,
                 subject : "Referral Notifications",
                 html: html,
